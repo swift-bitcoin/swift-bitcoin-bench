@@ -9,12 +9,14 @@ let benchmarks: @Sendable () -> Void = {
             let coinbaseTx = Transaction(
                 ins: [.init(outpoint: .coinbase)],
                 outs: [.init(value: 1, script: .payToPubkeyHash(pubkey))])
+            let prevouts = [coinbaseTx.outs[0]]
             let tx = Transaction(
                 ins: [.init(outpoint: coinbaseTx.outpoint(0))],
                 outs: [.init(value: 1, script: .payToPubkeyHash(pubkey))])
-            var signer = TransactionSigner(tx: tx, prevouts: coinbaseTx.outs)
+            var signer = TransactionSigner(tx: tx, prevouts: prevouts)
             signer.sign(input: 0, with: secretKey)
-            // let signedTx = signer.tx
+            let signedTx = signer.tx
+            assert(tx.verifyScripts(prevouts: prevouts, config: .standard))
         }
     }
 }
