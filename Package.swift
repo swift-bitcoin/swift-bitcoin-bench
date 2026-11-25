@@ -1,12 +1,14 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4.2
 import PackageDescription
 
 let package = Package(
     name: "swift-bitcoin-bench",
-    platforms: [.macOS(.v26)],
+    platforms: [.macOS(.v27)],
     dependencies: [
-        .package(url: "https://github.com/swift-bitcoin/swift-bitcoin", from: "0.1.0"),
-        .package(url: "https://github.com/ordo-one/benchmark", from: "1.0.0")
+        //.package(url: "https://github.com/swift-bitcoin/swift-bitcoin", from: "0.1.0"),
+        .package(path: "../swift-bitcoin"),
+        .package(url: "https://github.com/apple/swift-crypto", from: "5.2.0"),
+        .package(url: "https://github.com/ordo-one/benchmark", from: "1.39.1")
     ],
     targets: [
         .executableTarget(
@@ -23,6 +25,7 @@ let package = Package(
         .executableTarget(
             name: "CryptoBenchmark",
             dependencies: [
+                .product(name: "Crypto", package: "swift-crypto"),
                 .product(name: "Benchmark", package: "benchmark"),
                 .product(name: "BitcoinCrypto", package: "swift-bitcoin")
             ],
@@ -30,6 +33,27 @@ let package = Package(
             plugins: [
                 .plugin(name: "BenchmarkPlugin", package: "benchmark")
             ]
+        ),
+        .executableTarget(
+            name: "RIPEMD160",
+            dependencies: [
+                .product(name: "Crypto", package: "swift-crypto"),
+                .product(name: "Benchmark", package: "benchmark"),
+                .product(name: "BitcoinCrypto", package: "swift-bitcoin")
+            ],
+            path: "Benchmarks/RIPEMD160",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]
+        ),
+        .executableTarget(
+            name: "SipHash",
+            dependencies: [
+                .product(name: "Crypto", package: "swift-crypto"),
+                .product(name: "Benchmark", package: "benchmark"),
+                .product(name: "BitcoinCrypto", package: "swift-bitcoin")
+            ],
+            path: "Benchmarks/SipHash",
+            plugins: [.plugin(name: "BenchmarkPlugin", package: "benchmark")]
         )
+
     ]
 )
